@@ -1,0 +1,54 @@
+from django.shortcuts import render
+from django.http import HttpResponseRedirect,HttpResponse
+
+from models import paintmodel
+import json
+
+def new(request):
+    return render(request,'new.html')
+def post(request):
+    
+    
+   
+    s=request.GET.get('json_str','')
+    	
+    l=json.loads(s)
+  
+    a=0
+    n=len(l)-1
+    while a<n:
+        
+        p=paintmodel(NAME=l[n],SHAPE=l[a]['shape'],X=l[a]['x'],Y=l[a]['y'],MX=l[a]['mx'],MY=l[a]['my'],COLOR=l[a]['color'],SIZE=l[a]['size'])
+       
+        p.save()
+        a+=1
+    return render(request,'new.html')
+
+def gett(request):
+    
+    l=[]
+    p=paintmodel.objects.all()
+
+    for each in p:
+        if each.NAME in l:
+            pass
+        else:
+            l.append(each.NAME)
+ 
+    return HttpResponse(json.dumps(l))
+    
+def pop(request):
+    return render(request,'win.html')
+def gtt(request):
+  
+    l=[]
+    each=request.GET.get('js','')
+    each=json.loads(each)
+  
+    p=paintmodel.objects.filter(NAME=each)
+    for i in p:
+   
+        l.append([i.NAME,i.SHAPE,i.X,i.Y,i.MX,i.MY,i.COLOR,i.SIZE])
+        
+    print 'l',l  
+    return HttpResponse(json.dumps(l))
